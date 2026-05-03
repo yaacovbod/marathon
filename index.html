@@ -258,6 +258,19 @@
       line-height: 1.5;
     }
 
+    /* ── תווית אירוע בתוך תא — נייד ── */
+    .evt-label {
+      display: none;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1.1;
+      text-align: center;
+      overflow: hidden;
+      max-width: 100%;
+      padding: 0 2px;
+      word-break: break-word;
+    }
+
     @media (max-width: 520px) {
       .wrap { padding: 16px 10px 48px; }
 
@@ -268,33 +281,43 @@
       .card { padding: 16px 12px; border-radius: 10px; }
       .card-title { font-size: 15px; margin-bottom: 12px; }
 
-      /* מניעת zoom ב-iOS */
       input[type="text"], textarea { font-size: 16px; }
 
       .cal-legend { font-size: 11px; gap: 10px; margin-bottom: 10px; }
       .legend-dot { width: 8px; height: 8px; }
 
       .cal-month-title { font-size: 14px; }
-
       .day-name { font-size: 11px; padding: 3px 0; }
 
       .day-cell {
+        aspect-ratio: unset;
+        min-height: 56px;
         font-size: 12px;
         border-radius: 6px;
-        min-height: 38px;
         border-width: 1.5px;
+        justify-content: flex-start;
+        padding-top: 5px;
+        gap: 2px;
       }
 
-      .evt-dot { width: 4px; height: 4px; }
-      .event-dots { gap: 1px; bottom: 2px; }
-
-      /* טולטיפ מוחבא בנייד — מחליף אותו #event-info */
+      /* מציג תווית ומסתיר נקודות */
+      .evt-label { display: block; }
+      .event-dots { display: none; }
       .exam-tooltip { display: none !important; }
-      #event-info { display: none; }
+
+      /* צבע תווית לפי קטגוריה */
+      .evt-label.bagrut   { color: #EF4444; }
+      .evt-label.metakonet,
+      .evt-label.mivhan   { color: #D97706; }
+      .evt-label.holiday,
+      .evt-label.trip     { color: #059669; }
+
+      .day-cell.selected .evt-label { color: rgba(255,255,255,0.9); }
+
+      #event-info { display: none !important; }
 
       .dates-summary { font-size: 12px; }
       .date-tag { font-size: 11px; padding: 2px 8px; }
-
       .submit-btn { font-size: 15px; padding: 13px; }
     }
   </style>
@@ -492,7 +515,7 @@ function renderCalendar() {
       num.textContent = d;
       cell.appendChild(num);
 
-      // נקודות אירועים
+      // נקודות אירועים (דסקטופ) + תוויות (נייד)
       if (events.length > 0) {
         const dotsEl = document.createElement('div');
         dotsEl.className = 'event-dots';
@@ -508,6 +531,16 @@ function renderCalendar() {
           }
         });
         cell.appendChild(dotsEl);
+
+        // תווית טקסט לנייד — אירוע עיקרי בלבד
+        const primary = events.find(e => e.cat === 'bagrut') ||
+                        events.find(e => e.cat === 'metakonet' || e.cat === 'mivhan') ||
+                        events.find(e => e.cat === 'holiday' || e.cat === 'trip') ||
+                        events[0];
+        const lbl = document.createElement('span');
+        lbl.className = 'evt-label ' + primary.cat;
+        lbl.textContent = primary.title.length > 12 ? primary.title.slice(0, 11) + '…' : primary.title;
+        cell.appendChild(lbl);
 
         const tip = document.createElement('div');
         tip.className = 'exam-tooltip';
