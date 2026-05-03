@@ -539,7 +539,9 @@ function renderCalendar() {
                         events[0];
         const lbl = document.createElement('span');
         lbl.className = 'evt-label ' + primary.cat;
-        lbl.textContent = primary.title.length > 12 ? primary.title.slice(0, 11) + '…' : primary.title;
+        const clean = primary.title
+          .replace(/^בגרות ב?/, '').replace(/^מתכונת ב?/, '').replace(/^מבחן ב?/, '');
+        lbl.textContent = clean.length > 12 ? clean.slice(0, 11) + '…' : clean;
         cell.appendChild(lbl);
 
         const tip = document.createElement('div');
