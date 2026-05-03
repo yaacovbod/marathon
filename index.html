@@ -442,6 +442,15 @@ function buildEventMap(items) {
   });
 }
 
+function extractSubject(title) {
+  let s = title;
+  s = s.replace(/^(בגרות|מתכונת|מבחן|הדמייה)\s+/, '');
+  s = s.replace(/^(שנייה|ראשונה|שלישית|שיפור|משלימים|פנימית)\s+/, '');
+  s = s.replace(/^[בל]/, '');
+  s = s.replace(/\s*(מועד\s+ב'?|\(מועד[^)]*\)|\(תלמידי[^)]*\)|\(כיתת[^)]*\)|לניגשי.*)/, '');
+  return s.trim();
+}
+
 async function loadExams() {
   try {
     const res = await fetch(EXAM11_URL);
@@ -537,8 +546,7 @@ function renderCalendar() {
                         events[0];
         const lbl = document.createElement('span');
         lbl.className = 'evt-label ' + primary.cat;
-        const clean = primary.title
-          .replace(/^בגרות ב?/, '').replace(/^מתכונת ב?/, '').replace(/^מבחן ב?/, '');
+        const clean = extractSubject(primary.title);
         lbl.textContent = clean.length > 12 ? clean.slice(0, 11) + '…' : clean;
         cell.appendChild(lbl);
 
