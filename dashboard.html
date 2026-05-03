@@ -235,11 +235,94 @@
       font-size: 15px;
     }
 
-    @media (max-width: 600px) {
-      .day-cell { min-height: 54px; padding: 2px 3px; }
-      .exam-chip, .teacher-badge { font-size: 8px; padding: 1px 3px; }
-      .day-num { font-size: 11px; }
+    /* ── Agenda view (mobile) ── */
+    .agenda-section { margin-bottom: 24px; }
+
+    .agenda-month {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--accent);
+      padding: 6px 0 8px;
+      border-bottom: 2px solid var(--accent-l);
+      margin-bottom: 8px;
     }
+
+    .agenda-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .agenda-row:last-child { border-bottom: none; }
+
+    .agenda-date {
+      flex-shrink: 0;
+      width: 44px;
+      text-align: center;
+    }
+
+    .agenda-day-num {
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--text);
+      display: block;
+    }
+
+    .agenda-day-name {
+      font-size: 11px;
+      color: var(--muted);
+      display: block;
+    }
+
+    .agenda-events { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+
+    .agenda-chip {
+      display: inline-block;
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    .agenda-chip.bagrut  { background: var(--bagrut-l); color: var(--bagrut); }
+    .agenda-chip.meta    { background: var(--meta-l);   color: #92400E; }
+    .agenda-chip.holiday { background: #D1FAE5; color: #065F46; }
+    .agenda-chip.marathon { color: #fff; }
+
+    @media (max-width: 600px) {
+      .wrap { padding: 16px 12px 48px; }
+      .header h1 { font-size: 20px; }
+      .header p  { font-size: 12px; }
+
+      /* הסתרת גריד, הצגת אגנדה */
+      .cal-grid-wrap { display: none; }
+      .agenda-wrap   { display: block; }
+
+      /* טבלה → כרטיסים */
+      .req-table thead { display: none; }
+      .req-table, .req-table tbody, .req-table tr, .req-table td { display: block; width: 100%; }
+      .req-table tr {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        padding: 12px;
+      }
+      .req-table td { padding: 2px 0; border: none; font-size: 13px; }
+      .req-table td[data-label]::before {
+        content: attr(data-label) ': ';
+        font-weight: 700;
+        color: var(--muted);
+        font-size: 11px;
+      }
+    }
+
+    /* הסתרת אגנדה בדסקטופ */
+    .agenda-wrap { display: none; }
   </style>
 </head>
 <body>
@@ -269,7 +352,12 @@
   </div>
 
   <div id="status">טוען נתונים...</div>
-  <div id="calendar-area"></div>
+
+  <!-- גריד — דסקטופ -->
+  <div class="cal-grid-wrap" id="calendar-area"></div>
+
+  <!-- אגנדה — נייד -->
+  <div class="agenda-wrap" id="agenda-area"></div>
 
   <div class="table-section">
     <h2>כל הבקשות</h2>
@@ -399,6 +487,7 @@ async function loadAll() {
     document.getElementById('status').textContent =
       `${marathonRequests.length} בקשות מרתון | ${Object.keys(examDates).length} ימי אירועים`;
     renderCalendar();
+    renderAgenda();
     renderTable();
   } catch (e) {
     document.getElementById('status').textContent = 'שגיאה בטעינת נתונים';
@@ -503,6 +592,77 @@ function renderCalendar() {
   });
 }
 
+const HEB_DAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+
+function renderAgenda() {
+  const area = document.getElementById('agenda-area');
+  area.innerHTML = '';
+  const marathonMap = buildMarathonMap();
+
+  MONTHS.forEach(({ year, month, label }) => {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const rows = [];
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = dateKey(year, month, d);
+      const dow = new Date(year, month, d).getDay();
+      if (dow === 6) continue;
+
+      const exams = (examDates[key] || []).filter(e =>
+        e.cat === 'bagrut' || e.cat === 'metakonet' || e.cat === 'holiday' || e.cat === 'trip'
+      );
+      const marathon = marathonMap[key] || [];
+      if (exams.length === 0 && marathon.length === 0) continue;
+
+      rows.push({ d, key, dow, exams, marathon });
+    }
+
+    if (rows.length === 0) return;
+
+    const section = document.createElement('div');
+    section.className = 'agenda-section';
+
+    const monthTitle = document.createElement('div');
+    monthTitle.className = 'agenda-month';
+    monthTitle.textContent = label;
+    section.appendChild(monthTitle);
+
+    rows.forEach(({ d, dow, exams, marathon }) => {
+      const row = document.createElement('div');
+      row.className = 'agenda-row';
+
+      const dateEl = document.createElement('div');
+      dateEl.className = 'agenda-date';
+      dateEl.innerHTML = `<span class="agenda-day-num">${d}</span><span class="agenda-day-name">${HEB_DAYS[dow]}'</span>`;
+      row.appendChild(dateEl);
+
+      const eventsEl = document.createElement('div');
+      eventsEl.className = 'agenda-events';
+
+      exams.forEach(ev => {
+        const chip = document.createElement('span');
+        chip.className = 'agenda-chip ' + (ev.cat === 'bagrut' ? 'bagrut' : ev.cat === 'metakonet' ? 'meta' : 'holiday');
+        chip.textContent = ev.title;
+        eventsEl.appendChild(chip);
+      });
+
+      marathon.forEach(({ subject, teacherName }) => {
+        const chip = document.createElement('span');
+        chip.className = 'agenda-chip marathon';
+        chip.style.background = getTeacherColor(teacherName);
+        chip.textContent = `מרתון: ${subject}`;
+        chip.title = teacherName;
+        eventsEl.appendChild(chip);
+      });
+
+      row.appendChild(eventsEl);
+      section.appendChild(row);
+    });
+
+    area.appendChild(section);
+  });
+}
+
 function renderTable() {
   const area = document.getElementById('table-area');
   if (marathonRequests.length === 0) {
@@ -542,11 +702,11 @@ function renderTable() {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-left:6px;vertical-align:middle"></span>${req.teacherName}</td>
-      <td>${req.subject}</td>
-      <td class="dates-cell">${datesHtml}</td>
-      <td>${req.reason}</td>
-      <td style="white-space:nowrap;color:var(--muted)">${ts}</td>
+      <td data-label="מורה"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-left:6px;vertical-align:middle"></span>${req.teacherName}</td>
+      <td data-label="מקצוע">${req.subject}</td>
+      <td data-label="תאריכים" class="dates-cell">${datesHtml}</td>
+      <td data-label="הצדקה">${req.reason}</td>
+      <td data-label="הוגש" style="white-space:nowrap;color:var(--muted)">${ts}</td>
     `;
     tbody.appendChild(tr);
   });
