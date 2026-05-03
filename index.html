@@ -546,7 +546,8 @@ function renderCalendar() {
                         events[0];
         const lbl = document.createElement('span');
         lbl.className = 'evt-label ' + primary.cat;
-        const clean = extractSubject(primary.title);
+        const isExam = ['bagrut','metakonet','mivhan'].includes(primary.cat);
+        const clean = isExam ? extractSubject(primary.title) : primary.title;
         lbl.textContent = clean.length > 12 ? clean.slice(0, 11) + '…' : clean;
         cell.appendChild(lbl);
 
