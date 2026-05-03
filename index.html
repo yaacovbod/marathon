@@ -258,9 +258,9 @@
       line-height: 1.5;
     }
 
-    /* ── תווית אירוע בתוך תא — נייד ── */
+    /* ── תווית אירוע בתוך תא ── */
     .evt-label {
-      display: none;
+      display: block;
       font-size: 9px;
       font-weight: 700;
       line-height: 1.1;
@@ -269,7 +269,15 @@
       max-width: 100%;
       padding: 0 2px;
       word-break: break-word;
+      opacity: 0.75;
     }
+
+    .evt-label.bagrut   { color: #EF4444; }
+    .evt-label.metakonet,
+    .evt-label.mivhan   { color: #D97706; }
+    .evt-label.holiday,
+    .evt-label.trip     { color: #059669; }
+    .day-cell.selected .evt-label { color: rgba(255,255,255,0.9); }
 
     @media (max-width: 520px) {
       .wrap { padding: 16px 10px 48px; }
@@ -300,19 +308,9 @@
         gap: 2px;
       }
 
-      /* מציג תווית ומסתיר נקודות */
-      .evt-label { display: block; }
+      /* מסתיר נקודות בנייד — יש תוויות טקסט */
       .event-dots { display: none; }
       .exam-tooltip { display: none !important; }
-
-      /* צבע תווית לפי קטגוריה */
-      .evt-label.bagrut   { color: #EF4444; }
-      .evt-label.metakonet,
-      .evt-label.mivhan   { color: #D97706; }
-      .evt-label.holiday,
-      .evt-label.trip     { color: #059669; }
-
-      .day-cell.selected .evt-label { color: rgba(255,255,255,0.9); }
 
       #event-info { display: none !important; }
 
