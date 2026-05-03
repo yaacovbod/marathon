@@ -11,14 +11,11 @@
       --white:    #FFFFFF;
       --accent:   #0891B2;
       --accent-l: #E0F2FE;
-      --exam:     #0891B2;
-      --exam-l:   #CFFAFE;
       --text:     #111111;
       --muted:    #6B7280;
       --border:   #E5E7EB;
       --sel:      #0891B2;
       --sel-l:    #BAE6FD;
-      --danger:   #EF4444;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,25 +34,10 @@
       padding: 32px 16px 64px;
     }
 
-    /* ── Header ── */
-    .header {
-      text-align: center;
-      margin-bottom: 36px;
-    }
+    .header { text-align: center; margin-bottom: 36px; }
+    .header h1 { font-size: 28px; font-weight: 900; color: var(--accent); margin-bottom: 6px; }
+    .header p  { color: var(--muted); font-size: 15px; }
 
-    .header h1 {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
-
-    .header p {
-      color: var(--muted);
-      font-size: 15px;
-    }
-
-    /* ── Card ── */
     .card {
       background: var(--white);
       border: 1px solid var(--border);
@@ -64,23 +46,12 @@
       margin-bottom: 20px;
     }
 
-    .card-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      color: var(--text);
-    }
+    .card-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
 
-    /* ── Form Fields ── */
     .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
 
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--text);
-    }
+    label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
 
     input[type="text"], textarea {
       width: 100%;
@@ -101,36 +72,21 @@
       box-shadow: 0 0 0 3px var(--accent-l);
     }
 
-    textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
+    textarea { min-height: 80px; resize: vertical; }
 
     /* ── Calendar ── */
-    .cal-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .cal-month-title {
-      font-size: 15px;
-      font-weight: 700;
-    }
-
     .cal-legend {
       display: flex;
-      gap: 14px;
+      gap: 16px;
       font-size: 12px;
       color: var(--muted);
       flex-wrap: wrap;
+      margin-bottom: 12px;
     }
 
     .legend-dot {
       display: inline-block;
-      width: 10px;
-      height: 10px;
+      width: 9px; height: 9px;
       border-radius: 50%;
       margin-left: 4px;
       vertical-align: middle;
@@ -151,6 +107,8 @@
       padding: 4px 0;
     }
 
+    .cal-month-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+
     .day-cell {
       position: relative;
       aspect-ratio: 1;
@@ -169,35 +127,40 @@
     }
 
     .day-cell:hover { background: var(--accent-l); }
-
     .day-cell.empty { cursor: default; background: transparent; }
     .day-cell.empty:hover { background: transparent; }
-
-    .day-cell.shabbat { color: var(--muted); }
+    .day-cell.shabbat { color: var(--muted); background: #F3F4F6; cursor: default; }
+    .day-cell.shabbat:hover { background: #F3F4F6; }
 
     .day-cell.selected {
       background: var(--sel);
       color: #fff;
       border-color: var(--sel);
     }
-
     .day-cell.selected:hover { background: #0777A0; }
 
-    .exam-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--danger);
+    /* נקודת אירוע */
+    .event-dots {
+      display: flex;
+      gap: 2px;
       position: absolute;
       bottom: 3px;
     }
 
-    .day-cell.selected .exam-dot { background: #fff; }
-
-    .day-cell.has-exam {
-      border-color: #FCA5A5;
+    .evt-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
 
+    .day-cell.selected .evt-dot { opacity: 0.8; }
+
+    /* מסגרת לפי סוג עיקרי */
+    .day-cell.has-bagrut   { border-color: #FCA5A5; }
+    .day-cell.has-meta     { border-color: #FCD34D; }
+    .day-cell.has-holiday  { border-color: #6EE7B7; }
+
+    /* טולטיפ */
     .exam-tooltip {
       display: none;
       position: absolute;
@@ -213,17 +176,14 @@
       white-space: nowrap;
       z-index: 10;
       pointer-events: none;
+      max-width: 200px;
+      white-space: normal;
+      text-align: center;
     }
-
     .day-cell:hover .exam-tooltip { display: block; }
 
-    /* ── Dates summary ── */
-    .dates-summary {
-      margin-top: 12px;
-      min-height: 32px;
-      font-size: 13px;
-      color: var(--muted);
-    }
+    /* סיכום תאריכים */
+    .dates-summary { margin-top: 12px; min-height: 32px; font-size: 13px; color: var(--muted); }
 
     .date-tag {
       display: inline-block;
@@ -236,14 +196,7 @@
       font-weight: 600;
     }
 
-    /* ── Loading ── */
-    .cal-loading {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    /* ── Submit ── */
+    /* כפתור שליחה */
     .submit-btn {
       width: 100%;
       padding: 14px;
@@ -258,20 +211,17 @@
       transition: background 0.15s;
       margin-top: 8px;
     }
-
     .submit-btn:hover { background: #0777A0; }
     .submit-btn:disabled { background: #9CA3AF; cursor: not-allowed; }
 
-    /* ── Success ── */
+    /* הצלחה */
     .success-screen {
       display: none;
       text-align: center;
       padding: 60px 20px;
     }
-
     .success-icon {
-      width: 72px;
-      height: 72px;
+      width: 72px; height: 72px;
       background: var(--accent-l);
       border-radius: 50%;
       display: flex;
@@ -280,17 +230,10 @@
       margin: 0 auto 20px;
       font-size: 36px;
     }
+    .success-screen h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; color: var(--accent); }
+    .success-screen p  { color: var(--muted); font-size: 15px; }
 
-    .success-screen h2 {
-      font-size: 22px;
-      font-weight: 900;
-      margin-bottom: 8px;
-      color: var(--accent);
-    }
-
-    .success-screen p { color: var(--muted); font-size: 15px; }
-
-    /* ── Error ── */
+    /* שגיאה */
     .error-msg {
       background: #FEF2F2;
       border: 1px solid #FECACA;
@@ -313,13 +256,14 @@
 <div class="wrap">
   <div class="header">
     <h1>בקשת יום מרתון</h1>
-    <p>בחר תאריכים מבוקשים על הלוח — הבגרויות הקיימות מסומנות</p>
+    <p>בחר תאריכים על הלוח — הבגרויות וימי החופש מסומנים</p>
   </div>
 
   <div id="form-area">
-    <!-- פרטי מורה -->
+
+    <!-- פרטי מורה + הצדקה -->
     <div class="card">
-      <div class="card-title">פרטי המורה</div>
+      <div class="card-title">פרטי הבקשה</div>
       <div class="field">
         <label for="teacherName">שם המורה</label>
         <input type="text" id="teacherName" placeholder="שם פרטי ושם משפחה" autocomplete="name">
@@ -328,26 +272,23 @@
         <label for="subject">מקצוע</label>
         <input type="text" id="subject" placeholder="למשל: מתמטיקה, לשון, היסטוריה...">
       </div>
+      <div class="field">
+        <label for="reason">הצדקה / הסבר לבקשה</label>
+        <textarea id="reason" placeholder="בגרות / מתכונת / מטלות בתוכנית הבגרויות הגמישה"></textarea>
+      </div>
     </div>
 
     <!-- לוח שנה -->
     <div class="card">
       <div class="card-title">תאריכים מבוקשים לימי מרתון</div>
-      <div class="cal-loading" id="cal-loading">טוען בגרויות...</div>
       <div class="cal-legend">
         <span><span class="legend-dot" style="background:var(--sel)"></span> ימים שבחרת</span>
-        <span><span class="legend-dot" style="background:var(--danger)"></span> יום בגרות / מתכונת</span>
+        <span><span class="legend-dot" style="background:#EF4444"></span> בגרות</span>
+        <span><span class="legend-dot" style="background:#F59E0B"></span> מתכונת / מבחן</span>
+        <span><span class="legend-dot" style="background:#10B981"></span> חופשה</span>
       </div>
       <div id="calendar"></div>
       <div class="dates-summary" id="dates-summary">לא נבחרו תאריכים עדיין</div>
-    </div>
-
-    <!-- הצדקה -->
-    <div class="card">
-      <div class="card-title">הצדקה / הסבר לבקשה</div>
-      <div class="field">
-        <textarea id="reason" placeholder="לאיזו בגרות ההכנה? מדוע הכרחי בדווקא בתאריכים אלה?"></textarea>
-      </div>
     </div>
 
     <button class="submit-btn" id="submitBtn" onclick="submitForm()">שלח בקשה</button>
@@ -374,28 +315,72 @@ const MONTHS = [
 ];
 const DAY_NAMES = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
 
+// נתוני fallback — כל אירועי מאי–יולי 2026 מ-exam11
+const FALLBACK_EVENTS = [
+  { start:'20260504', end:'20260505', events:[{title:'מתכונת שנייה במתמטיקה', cat:'metakonet'},{title:'מתכונת בניהול עסקי', cat:'metakonet'}]},
+  { start:'20260505', end:'20260506', events:[{title:'לג בעומר', cat:'holiday'}]},
+  { start:'20260506', end:'20260507', events:[{title:'מתכונת באנגלית', cat:'metakonet'}]},
+  { start:'20260507', end:'20260508', events:[{title:'בגרות בלשון', cat:'bagrut'},{title:'מתכונת שיפור במתמטיקה', cat:'metakonet'}]},
+  { start:'20260510', end:'20260511', events:[{title:'מתכונת שיפור במתמטיקה לניגשי לשון', cat:'metakonet'}]},
+  { start:'20260512', end:'20260513', events:[{title:'בגרות מתמטיקה 3 ו4 יח"ל', cat:'bagrut'}]},
+  { start:'20260513', end:'20260514', events:[{title:'בגרות במתמטיקה 5 יח"ל', cat:'bagrut'},{title:'מתכונת משלימים באנגלית', cat:'metakonet'}]},
+  { start:'20260517', end:'20260518', events:[{title:'מתכונת בפיזיקה', cat:'metakonet'}]},
+  { start:'20260518', end:'20260519', events:[{title:'בגרות באנגלית 3 ו5 יח"ל', cat:'bagrut'}]},
+  { start:'20260519', end:'20260520', events:[{title:'בגרות באנגלית 4 יח"ל', cat:'bagrut'}]},
+  { start:'20260520', end:'20260521', events:[{title:'מתכונת בניהול עסקי', cat:'metakonet'},{title:'מתכונת מידע ונתונים', cat:'metakonet'}]},
+  { start:'20260521', end:'20260523', events:[{title:'שבועות', cat:'holiday'}]},
+  { start:'20260522', end:'20260523', events:[{title:'שבועות', cat:'holiday'}]},
+  { start:'20260524', end:'20260526', events:[{title:'טיול שנתי', cat:'trip'}]},
+  { start:'20260525', end:'20260526', events:[{title:'טיול שנתי', cat:'trip'}]},
+  { start:'20260528', end:'20260529', events:[{title:'מתכונת במדעי המחשב', cat:'metakonet'},{title:'בגרות תנ"ך', cat:'bagrut'}]},
+  { start:'20260531', end:'20260601', events:[{title:'הדמייה מידע ונתונים', cat:'metakonet'}]},
+  { start:'20260601', end:'20260602', events:[{title:'מבחן בביולוגיה', cat:'mivhan'},{title:'מתכונת בפסיכולוגיה', cat:'metakonet'}]},
+  { start:'20260602', end:'20260603', events:[{title:'מתכונת בפיזיקה', cat:'metakonet'}]},
+  { start:'20260604', end:'20260605', events:[{title:'בגרות בניהול עסקי', cat:'bagrut'},{title:'מבחן באומנות', cat:'mivhan'},{title:'מבחן בתקשורת', cat:'mivhan'},{title:'מתכונת במוט"ל', cat:'metakonet'}]},
+  { start:'20260608', end:'20260609', events:[{title:'בגרות פנימית בספרות', cat:'bagrut'}]},
+  { start:'20260610', end:'20260611', events:[{title:'מתכונת בפיזיקה', cat:'metakonet'}]},
+  { start:'20260611', end:'20260612', events:[{title:'בגרות פנימית בספרות מועד ב\'', cat:'bagrut'}]},
+  { start:'20260615', end:'20260616', events:[{title:'בגרות במוט"ל', cat:'bagrut'},{title:'בגרות בפיזיקה', cat:'bagrut'},{title:'מתכונת בפסיכולוגיה', cat:'metakonet'}]},
+  { start:'20260622', end:'20260623', events:[{title:'בגרות בפסיכולוגיה', cat:'bagrut'}]},
+  { start:'20260625', end:'20260626', events:[{title:'בגרות במידע ונתונים', cat:'bagrut'},{title:'בגרות במדעי המחשב', cat:'bagrut'}]},
+  { start:'20260629', end:'20260630', events:[{title:'בגרות מדעי המחשב (תלמידי מידע ונתונים)', cat:'bagrut'}]},
+  { start:'20260630', end:'20260701', events:[{title:'בגרות באנגלית (מועד ב\')', cat:'bagrut'}]},
+  { start:'20260706', end:'20260707', events:[{title:'בגרות במתמטיקה (מועד ב\')', cat:'bagrut'}]},
+  { start:'20260709', end:'20260710', events:[{title:'בגרות בלשון (מועד ב\')', cat:'bagrut'}]},
+];
+
+const DOT_COLORS = {
+  bagrut:    '#EF4444',
+  metakonet: '#F59E0B',
+  mivhan:    '#F59E0B',
+  holiday:   '#10B981',
+  trip:      '#10B981',
+  army:      '#10B981',
+  special:   '#8B5CF6',
+};
+
 let selectedDates = new Set();
-let examDates = {};
+let eventDates = {};
+
+function buildEventMap(items) {
+  items.forEach(item => {
+    const key = item.start;
+    if (!eventDates[key]) eventDates[key] = [];
+    (item.events || []).forEach(ev => {
+      eventDates[key].push({ title: ev.title, cat: ev.cat });
+    });
+  });
+}
 
 async function loadExams() {
   try {
     const res = await fetch(EXAM11_URL);
     const data = await res.json();
-    data.forEach(monthGroup => {
-      (monthGroup.items || monthGroup.days || monthGroup.dates || []).forEach(day => {
-        (day.events || []).forEach(ev => {
-          if (ev.cat === 'bagrut' || ev.cat === 'metakonet') {
-            const key = day.start;
-            if (!examDates[key]) examDates[key] = [];
-            examDates[key].push(ev.title);
-          }
-        });
-      });
-    });
+    const allItems = data.flatMap(mg => mg.items || []);
+    buildEventMap(allItems);
   } catch (e) {
-    console.warn('לא ניתן לטעון בגרויות:', e);
+    buildEventMap(FALLBACK_EVENTS);
   }
-  document.getElementById('cal-loading').style.display = 'none';
   renderCalendar();
 }
 
@@ -408,15 +393,14 @@ function renderCalendar() {
   cal.innerHTML = '';
 
   MONTHS.forEach(({ year, month, label }) => {
-    const headerRow = document.createElement('div');
-    headerRow.className = 'cal-header-row';
-    headerRow.innerHTML = `<div class="cal-month-title">${label}</div>`;
-    cal.appendChild(headerRow);
+    const title = document.createElement('div');
+    title.className = 'cal-month-title';
+    title.textContent = label;
+    cal.appendChild(title);
 
     const grid = document.createElement('div');
     grid.className = 'cal-grid';
 
-    // כותרות ימים (ראשון עד שבת)
     DAY_NAMES.forEach(d => {
       const n = document.createElement('div');
       n.className = 'day-name';
@@ -424,10 +408,9 @@ function renderCalendar() {
       grid.appendChild(n);
     });
 
-    const firstDay = new Date(year, month, 1).getDay(); // 0=ראשון
+    const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // תאי ריקים לפני היום הראשון
     for (let i = 0; i < firstDay; i++) {
       const empty = document.createElement('div');
       empty.className = 'day-cell empty';
@@ -439,28 +422,51 @@ function renderCalendar() {
       const cell = document.createElement('div');
       cell.className = 'day-cell';
 
-      const dayOfWeek = new Date(year, month, d).getDay();
-      if (dayOfWeek === 6) cell.classList.add('shabbat');
+      const dow = new Date(year, month, d).getDay();
+      if (dow === 6) { cell.classList.add('shabbat'); }
 
       if (selectedDates.has(key)) cell.classList.add('selected');
 
-      const exams = examDates[key];
-      if (exams && exams.length > 0) {
-        cell.classList.add('has-exam');
-        const dot = document.createElement('span');
-        dot.className = 'exam-dot';
-        cell.appendChild(dot);
+      const events = eventDates[key] || [];
+
+      // קביעת מסגרת לפי עדיפות
+      const hasBagrut   = events.some(e => e.cat === 'bagrut');
+      const hasMeta     = events.some(e => e.cat === 'metakonet' || e.cat === 'mivhan');
+      const hasHoliday  = events.some(e => e.cat === 'holiday' || e.cat === 'trip' || e.cat === 'army');
+
+      if (hasBagrut)        cell.classList.add('has-bagrut');
+      else if (hasMeta)     cell.classList.add('has-meta');
+      else if (hasHoliday)  cell.classList.add('has-holiday');
+
+      // מספר יום
+      const num = document.createElement('span');
+      num.textContent = d;
+      cell.appendChild(num);
+
+      // נקודות אירועים
+      if (events.length > 0) {
+        const dotsEl = document.createElement('div');
+        dotsEl.className = 'event-dots';
+        const seen = new Set();
+        events.forEach(ev => {
+          const color = DOT_COLORS[ev.cat] || '#9CA3AF';
+          if (!seen.has(color)) {
+            seen.add(color);
+            const dot = document.createElement('span');
+            dot.className = 'evt-dot';
+            dot.style.background = color;
+            dotsEl.appendChild(dot);
+          }
+        });
+        cell.appendChild(dotsEl);
+
         const tip = document.createElement('div');
         tip.className = 'exam-tooltip';
-        tip.textContent = exams.join(', ');
+        tip.textContent = events.map(e => e.title).join(' | ');
         cell.appendChild(tip);
       }
 
-      const num = document.createElement('span');
-      num.textContent = d;
-      cell.insertBefore(num, cell.firstChild);
-
-      if (dayOfWeek !== 6) {
+      if (dow !== 6) {
         cell.addEventListener('click', () => toggleDate(key));
       }
 
@@ -472,33 +478,25 @@ function renderCalendar() {
 }
 
 function toggleDate(key) {
-  if (selectedDates.has(key)) {
-    selectedDates.delete(key);
-  } else {
-    selectedDates.add(key);
-  }
+  if (selectedDates.has(key)) selectedDates.delete(key);
+  else selectedDates.add(key);
   renderCalendar();
   updateSummary();
 }
 
 function updateSummary() {
   const el = document.getElementById('dates-summary');
-  if (selectedDates.size === 0) {
-    el.textContent = 'לא נבחרו תאריכים עדיין';
-    return;
-  }
+  if (selectedDates.size === 0) { el.textContent = 'לא נבחרו תאריכים עדיין'; return; }
   const sorted = Array.from(selectedDates).sort();
   el.innerHTML = sorted.map(k => {
-    const y = k.slice(0, 4), m = k.slice(4, 6), d = k.slice(6, 8);
+    const y = k.slice(0,4), m = k.slice(4,6), d = k.slice(6,8);
     return `<span class="date-tag">${d}/${m}/${y}</span>`;
   }).join('');
 }
 
 function validateForm() {
-  const name = document.getElementById('teacherName').value.trim();
-  const subj = document.getElementById('subject').value.trim();
-  if (!name) return 'נא למלא שם מורה';
-  if (!subj) return 'נא למלא מקצוע';
+  if (!document.getElementById('teacherName').value.trim()) return 'נא למלא שם מורה';
+  if (!document.getElementById('subject').value.trim()) return 'נא למלא מקצוע';
   if (selectedDates.size === 0) return 'נא לבחור לפחות תאריך אחד';
   return null;
 }
@@ -506,11 +504,7 @@ function validateForm() {
 function submitForm() {
   const err = validateForm();
   const errEl = document.getElementById('errorMsg');
-  if (err) {
-    errEl.textContent = err;
-    errEl.style.display = 'block';
-    return;
-  }
+  if (err) { errEl.textContent = err; errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
   const btn = document.getElementById('submitBtn');
@@ -533,15 +527,11 @@ function submitForm() {
   form.method = 'POST';
   form.action = APPS_SCRIPT_URL;
   form.target = 'submit-target';
-
   Object.entries(params).forEach(([k, v]) => {
     const inp = document.createElement('input');
-    inp.type = 'hidden';
-    inp.name = k;
-    inp.value = v;
+    inp.type = 'hidden'; inp.name = k; inp.value = v;
     form.appendChild(inp);
   });
-
   document.body.appendChild(form);
   form.submit();
   document.body.removeChild(form);
