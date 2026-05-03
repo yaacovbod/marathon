@@ -413,14 +413,14 @@ function isoToKey(iso) {
   return iso.replace(/-/g, '');
 }
 
-// מיפוי תאריך → מורים
+// מיפוי תאריך → מקצועות
 function buildMarathonMap() {
   const map = {};
   marathonRequests.forEach(req => {
     req.dates.forEach(iso => {
       const key = isoToKey(iso);
       if (!map[key]) map[key] = [];
-      map[key].push(req.teacherName);
+      map[key].push({ subject: req.subject, teacherName: req.teacherName });
     });
   });
   return map;
@@ -485,13 +485,13 @@ function renderCalendar() {
       });
 
       // בקשות מרתון
-      const teachers = marathonMap[key] || [];
-      teachers.forEach(name => {
+      const entries = marathonMap[key] || [];
+      entries.forEach(({ subject, teacherName }) => {
         const badge = document.createElement('span');
         badge.className = 'teacher-badge';
-        badge.style.background = getTeacherColor(name);
-        badge.textContent = name;
-        badge.title = name;
+        badge.style.background = getTeacherColor(teacherName);
+        badge.textContent = subject;
+        badge.title = teacherName;
         cell.appendChild(badge);
       });
 
