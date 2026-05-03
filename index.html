@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>בקשת מרתון — נעימת הלב</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #F9FAFB;
+      --white:    #FFFFFF;
+      --accent:   #0891B2;
+      --accent-l: #E0F2FE;
+      --exam:     #0891B2;
+      --exam-l:   #CFFAFE;
+      --text:     #111111;
+      --muted:    #6B7280;
+      --border:   #E5E7EB;
+      --sel:      #0891B2;
+      --sel-l:    #BAE6FD;
+      --danger:   #EF4444;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+    }
+
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 16px 64px;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    /* ── Form Fields ── */
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.15s;
+      direction: rtl;
+    }
+
+    input[type="text"]:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-l);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    /* ── Calendar ── */
+    .cal-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .cal-month-title {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .cal-legend {
+      display: flex;
+      gap: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      margin-bottom: 20px;
+    }
+
+    .day-name {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      padding: 4px 0;
+    }
+
+    .day-cell {
+      position: relative;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      border: 2px solid transparent;
+      background: var(--bg);
+      transition: background 0.1s, border-color 0.1s;
+    }
+
+    .day-cell:hover { background: var(--accent-l); }
+
+    .day-cell.empty { cursor: default; background: transparent; }
+    .day-cell.empty:hover { background: transparent; }
+
+    .day-cell.shabbat { color: var(--muted); }
+
+    .day-cell.selected {
+      background: var(--sel);
+      color: #fff;
+      border-color: var(--sel);
+    }
+
+    .day-cell.selected:hover { background: #0777A0; }
+
+    .exam-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--danger);
+      position: absolute;
+      bottom: 3px;
+    }
+
+    .day-cell.selected .exam-dot { background: #fff; }
+
+    .day-cell.has-exam {
+      border-color: #FCA5A5;
+    }
+
+    .exam-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      right: 50%;
+      transform: translateX(50%);
+      background: #1F2937;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 400;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .day-cell:hover .exam-tooltip { display: block; }
+
+    /* ── Dates summary ── */
+    .dates-summary {
+      margin-top: 12px;
+      min-height: 32px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .date-tag {
+      display: inline-block;
+      background: var(--sel-l);
+      color: var(--accent);
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin: 2px 3px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* ── Loading ── */
+    .cal-loading {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    /* ── Submit ── */
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 8px;
+    }
+
+    .submit-btn:hover { background: #0777A0; }
+    .submit-btn:disabled { background: #9CA3AF; cursor: not-allowed; }
+
+    /* ── Success ── */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--accent-l);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 36px;
+    }
+
+    .success-screen h2 {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: var(--accent);
+    }
+
+    .success-screen p { color: var(--muted); font-size: 15px; }
+
+    /* ── Error ── */
+    .error-msg {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #B91C1C;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .day-cell { font-size: 11px; border-radius: 5px; }
+      .cal-legend { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="header">
+    <h1>בקשת יום מרתון</h1>
+    <p>בחר תאריכים מבוקשים על הלוח — הבגרויות הקיימות מסומנות</p>
+  </div>
+
+  <div id="form-area">
+    <!-- פרטי מורה -->
+    <div class="card">
+      <div class="card-title">פרטי המורה</div>
+      <div class="field">
+        <label for="teacherName">שם המורה</label>
+        <input type="text" id="teacherName" placeholder="שם פרטי ושם משפחה" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="subject">מקצוע</label>
+        <input type="text" id="subject" placeholder="למשל: מתמטיקה, לשון, היסטוריה...">
+      </div>
+    </div>
+
+    <!-- לוח שנה -->
+    <div class="card">
+      <div class="card-title">תאריכים מבוקשים לימי מרתון</div>
+      <div class="cal-loading" id="cal-loading">טוען בגרויות...</div>
+      <div class="cal-legend">
+        <span><span class="legend-dot" style="background:var(--sel)"></span> ימים שבחרת</span>
+        <span><span class="legend-dot" style="background:var(--danger)"></span> יום בגרות / מתכונת</span>
+      </div>
+      <div id="calendar"></div>
+      <div class="dates-summary" id="dates-summary">לא נבחרו תאריכים עדיין</div>
+    </div>
+
+    <!-- הצדקה -->
+    <div class="card">
+      <div class="card-title">הצדקה / הסבר לבקשה</div>
+      <div class="field">
+        <textarea id="reason" placeholder="לאיזו בגרות ההכנה? מדוע הכרחי בדווקא בתאריכים אלה?"></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">שלח בקשה</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">✓</div>
+    <h2>הבקשה נשלחה בהצלחה!</h2>
+    <p>הבקשה התקבלה ותיבדק בהקדם.</p>
+  </div>
+</div>
+
+<iframe name="submit-target" style="display:none"></iframe>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFDlBHn07-bzcBGhok5pVsrFsQcvwspYEf8DF8toXFzog-qhkerIbNc361-Xij3W2VAg/exec';
+const EXAM11_URL = 'https://exam11-next.vercel.app/api/events';
+
+const MONTHS = [
+  { year: 2026, month: 4, label: 'מאי 2026' },
+  { year: 2026, month: 5, label: 'יוני 2026' },
+  { year: 2026, month: 6, label: 'יולי 2026' },
+];
+const DAY_NAMES = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
+
+let selectedDates = new Set();
+let examDates = {};
+
+async function loadExams() {
+  try {
+    const res = await fetch(EXAM11_URL);
+    const data = await res.json();
+    data.forEach(monthGroup => {
+      (monthGroup.items || monthGroup.days || monthGroup.dates || []).forEach(day => {
+        (day.events || []).forEach(ev => {
+          if (ev.cat === 'bagrut' || ev.cat === 'metakonet') {
+            const key = day.start;
+            if (!examDates[key]) examDates[key] = [];
+            examDates[key].push(ev.title);
+          }
+        });
+      });
+    });
+  } catch (e) {
+    console.warn('לא ניתן לטעון בגרויות:', e);
+  }
+  document.getElementById('cal-loading').style.display = 'none';
+  renderCalendar();
+}
+
+function dateKey(year, month, day) {
+  return `${year}${String(month + 1).padStart(2, '0')}${String(day).padStart(2, '0')}`;
+}
+
+function renderCalendar() {
+  const cal = document.getElementById('calendar');
+  cal.innerHTML = '';
+
+  MONTHS.forEach(({ year, month, label }) => {
+    const headerRow = document.createElement('div');
+    headerRow.className = 'cal-header-row';
+    headerRow.innerHTML = `<div class="cal-month-title">${label}</div>`;
+    cal.appendChild(headerRow);
+
+    const grid = document.createElement('div');
+    grid.className = 'cal-grid';
+
+    // כותרות ימים (ראשון עד שבת)
+    DAY_NAMES.forEach(d => {
+      const n = document.createElement('div');
+      n.className = 'day-name';
+      n.textContent = d;
+      grid.appendChild(n);
+    });
+
+    const firstDay = new Date(year, month, 1).getDay(); // 0=ראשון
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // תאי ריקים לפני היום הראשון
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'day-cell empty';
+      grid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = dateKey(year, month, d);
+      const cell = document.createElement('div');
+      cell.className = 'day-cell';
+
+      const dayOfWeek = new Date(year, month, d).getDay();
+      if (dayOfWeek === 6) cell.classList.add('shabbat');
+
+      if (selectedDates.has(key)) cell.classList.add('selected');
+
+      const exams = examDates[key];
+      if (exams && exams.length > 0) {
+        cell.classList.add('has-exam');
+        const dot = document.createElement('span');
+        dot.className = 'exam-dot';
+        cell.appendChild(dot);
+        const tip = document.createElement('div');
+        tip.className = 'exam-tooltip';
+        tip.textContent = exams.join(', ');
+        cell.appendChild(tip);
+      }
+
+      const num = document.createElement('span');
+      num.textContent = d;
+      cell.insertBefore(num, cell.firstChild);
+
+      if (dayOfWeek !== 6) {
+        cell.addEventListener('click', () => toggleDate(key));
+      }
+
+      grid.appendChild(cell);
+    }
+
+    cal.appendChild(grid);
+  });
+}
+
+function toggleDate(key) {
+  if (selectedDates.has(key)) {
+    selectedDates.delete(key);
+  } else {
+    selectedDates.add(key);
+  }
+  renderCalendar();
+  updateSummary();
+}
+
+function updateSummary() {
+  const el = document.getElementById('dates-summary');
+  if (selectedDates.size === 0) {
+    el.textContent = 'לא נבחרו תאריכים עדיין';
+    return;
+  }
+  const sorted = Array.from(selectedDates).sort();
+  el.innerHTML = sorted.map(k => {
+    const y = k.slice(0, 4), m = k.slice(4, 6), d = k.slice(6, 8);
+    return `<span class="date-tag">${d}/${m}/${y}</span>`;
+  }).join('');
+}
+
+function validateForm() {
+  const name = document.getElementById('teacherName').value.trim();
+  const subj = document.getElementById('subject').value.trim();
+  if (!name) return 'נא למלא שם מורה';
+  if (!subj) return 'נא למלא מקצוע';
+  if (selectedDates.size === 0) return 'נא לבחור לפחות תאריך אחד';
+  return null;
+}
+
+function submitForm() {
+  const err = validateForm();
+  const errEl = document.getElementById('errorMsg');
+  if (err) {
+    errEl.textContent = err;
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'שולח...';
+
+  const sorted = Array.from(selectedDates).sort();
+  const isoArr = sorted.map(k => `${k.slice(0,4)}-${k.slice(4,6)}-${k.slice(6,8)}`);
+
+  const params = {
+    sheetName:   'מרתון',
+    timestamp:   new Date().toISOString(),
+    teacherName: document.getElementById('teacherName').value.trim(),
+    subject:     document.getElementById('subject').value.trim(),
+    dates:       JSON.stringify(isoArr),
+    reason:      document.getElementById('reason').value.trim(),
+  };
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = APPS_SCRIPT_URL;
+  form.target = 'submit-target';
+
+  Object.entries(params).forEach(([k, v]) => {
+    const inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = k;
+    inp.value = v;
+    form.appendChild(inp);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+
+  setTimeout(() => {
+    document.getElementById('form-area').style.display = 'none';
+    document.getElementById('success-screen').style.display = 'block';
+  }, 1200);
+}
+
+loadExams();
+</script>
+</body>
+</html>
