@@ -245,9 +245,57 @@
       display: none;
     }
 
-    @media (max-width: 480px) {
-      .day-cell { font-size: 11px; border-radius: 5px; }
-      .cal-legend { font-size: 11px; }
+    /* ── אינדיקטור אירועים לנייד ── */
+    #event-info {
+      display: none;
+      background: #1F2937;
+      color: #fff;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 520px) {
+      .wrap { padding: 16px 10px 48px; }
+
+      .header { margin-bottom: 20px; }
+      .header h1 { font-size: 22px; }
+      .header p  { font-size: 13px; }
+
+      .card { padding: 16px 12px; border-radius: 10px; }
+      .card-title { font-size: 15px; margin-bottom: 12px; }
+
+      /* מניעת zoom ב-iOS */
+      input[type="text"], textarea { font-size: 16px; }
+
+      .cal-legend { font-size: 11px; gap: 10px; margin-bottom: 10px; }
+      .legend-dot { width: 8px; height: 8px; }
+
+      .cal-month-title { font-size: 14px; }
+
+      .day-name { font-size: 11px; padding: 3px 0; }
+
+      .day-cell {
+        font-size: 12px;
+        border-radius: 6px;
+        min-height: 38px;
+        border-width: 1.5px;
+      }
+
+      .evt-dot { width: 4px; height: 4px; }
+      .event-dots { gap: 1px; bottom: 2px; }
+
+      /* טולטיפ מוחבא בנייד — מחליף אותו #event-info */
+      .exam-tooltip { display: none !important; }
+      #event-info { display: none; }
+
+      .dates-summary { font-size: 12px; }
+      .date-tag { font-size: 11px; padding: 2px 8px; }
+
+      .submit-btn { font-size: 15px; padding: 13px; }
     }
   </style>
 </head>
@@ -288,6 +336,7 @@
         <span><span class="legend-dot" style="background:#10B981"></span> חופשה</span>
       </div>
       <div id="calendar"></div>
+      <div id="event-info"></div>
       <div class="dates-summary" id="dates-summary">לא נבחרו תאריכים עדיין</div>
     </div>
 
@@ -467,7 +516,7 @@ function renderCalendar() {
       }
 
       if (dow !== 6) {
-        cell.addEventListener('click', () => toggleDate(key));
+        cell.addEventListener('click', () => toggleDate(key, events));
       }
 
       grid.appendChild(cell);
@@ -477,11 +526,21 @@ function renderCalendar() {
   });
 }
 
-function toggleDate(key) {
+const isMobile = () => window.innerWidth <= 520;
+
+function toggleDate(key, events) {
   if (selectedDates.has(key)) selectedDates.delete(key);
   else selectedDates.add(key);
   renderCalendar();
   updateSummary();
+
+  if (isMobile() && events && events.length > 0) {
+    const el = document.getElementById('event-info');
+    el.textContent = events.map(e => e.title).join(' | ');
+    el.style.display = 'block';
+    clearTimeout(el._timer);
+    el._timer = setTimeout(() => { el.style.display = 'none'; }, 3000);
+  }
 }
 
 function updateSummary() {
