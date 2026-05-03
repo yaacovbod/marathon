@@ -111,11 +111,13 @@
 
     .day-cell {
       position: relative;
-      aspect-ratio: 1;
+      min-height: 52px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding-top: 6px;
+      gap: 2px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
@@ -298,14 +300,9 @@
       .day-name { font-size: 11px; padding: 3px 0; }
 
       .day-cell {
-        aspect-ratio: unset;
-        min-height: 56px;
         font-size: 12px;
         border-radius: 6px;
         border-width: 1.5px;
-        justify-content: flex-start;
-        padding-top: 5px;
-        gap: 2px;
       }
 
       /* מסתיר נקודות בנייד — יש תוויות טקסט */
@@ -539,17 +536,15 @@ function renderCalendar() {
         });
         cell.appendChild(dotsEl);
 
-        // תווית טקסט לנייד — אירוע עיקרי בלבד
-        const primary = events.find(e => e.cat === 'bagrut') ||
-                        events.find(e => e.cat === 'metakonet' || e.cat === 'mivhan') ||
-                        events.find(e => e.cat === 'holiday' || e.cat === 'trip') ||
-                        events[0];
-        const lbl = document.createElement('span');
-        lbl.className = 'evt-label ' + primary.cat;
-        const isExam = ['bagrut','metakonet','mivhan'].includes(primary.cat);
-        const clean = isExam ? extractSubject(primary.title) : primary.title;
-        lbl.textContent = clean.length > 12 ? clean.slice(0, 11) + '…' : clean;
-        cell.appendChild(lbl);
+        // תווית לכל אירוע
+        events.forEach(ev => {
+          const lbl = document.createElement('span');
+          lbl.className = 'evt-label ' + ev.cat;
+          const isExam = ['bagrut','metakonet','mivhan'].includes(ev.cat);
+          const clean = isExam ? extractSubject(ev.title) : ev.title;
+          lbl.textContent = clean.length > 10 ? clean.slice(0, 9) + '…' : clean;
+          cell.appendChild(lbl);
+        });
 
         const tip = document.createElement('div');
         tip.className = 'exam-tooltip';
