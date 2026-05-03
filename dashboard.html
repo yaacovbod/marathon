@@ -306,21 +306,58 @@ function getTeacherColor(name) {
   return teacherColorMap[name];
 }
 
-function loadExams() {
-  return fetch(EXAM11_URL)
-    .then(r => r.json())
-    .then(data => {
-      examDates = {};
-      data.forEach(mg => {
-        (mg.items || []).forEach(item => {
-          const key = item.start;
-          (item.events || []).forEach(ev => {
-            if (!examDates[key]) examDates[key] = [];
-            examDates[key].push({ title: ev.title, cat: ev.cat });
-          });
-        });
-      });
+const FALLBACK_EVENTS = [
+  { start:'20260504', events:[{title:'מתכונת שנייה במתמטיקה', cat:'metakonet'},{title:'מתכונת בניהול עסקי', cat:'metakonet'}]},
+  { start:'20260505', events:[{title:'לג בעומר', cat:'holiday'}]},
+  { start:'20260506', events:[{title:'מתכונת באנגלית', cat:'metakonet'}]},
+  { start:'20260507', events:[{title:'בגרות בלשון', cat:'bagrut'},{title:'מתכונת שיפור במתמטיקה', cat:'metakonet'}]},
+  { start:'20260510', events:[{title:'מתכונת שיפור במתמטיקה לניגשי לשון', cat:'metakonet'}]},
+  { start:'20260512', events:[{title:'בגרות מתמטיקה 3 ו4 יח"ל', cat:'bagrut'}]},
+  { start:'20260513', events:[{title:'בגרות במתמטיקה 5 יח"ל', cat:'bagrut'},{title:'מתכונת משלימים באנגלית', cat:'metakonet'}]},
+  { start:'20260517', events:[{title:'מתכונת בפיזיקה', cat:'metakonet'}]},
+  { start:'20260518', events:[{title:'בגרות באנגלית 3 ו5 יח"ל', cat:'bagrut'}]},
+  { start:'20260519', events:[{title:'בגרות באנגלית 4 יח"ל', cat:'bagrut'}]},
+  { start:'20260520', events:[{title:'מתכונת בניהול עסקי', cat:'metakonet'},{title:'מתכונת מידע ונתונים', cat:'metakonet'}]},
+  { start:'20260521', events:[{title:'שבועות', cat:'holiday'}]},
+  { start:'20260522', events:[{title:'שבועות', cat:'holiday'}]},
+  { start:'20260524', events:[{title:'טיול שנתי', cat:'trip'}]},
+  { start:'20260525', events:[{title:'טיול שנתי', cat:'trip'}]},
+  { start:'20260528', events:[{title:'מתכונת במדעי המחשב', cat:'metakonet'},{title:'בגרות תנ"ך', cat:'bagrut'}]},
+  { start:'20260531', events:[{title:'הדמייה מידע ונתונים', cat:'metakonet'}]},
+  { start:'20260601', events:[{title:'מבחן בביולוגיה', cat:'mivhan'},{title:'מתכונת בפסיכולוגיה', cat:'metakonet'}]},
+  { start:'20260602', events:[{title:'מתכונת בפיזיקה', cat:'metakonet'}]},
+  { start:'20260604', events:[{title:'בגרות בניהול עסקי', cat:'bagrut'},{title:'מבחן באומנות', cat:'mivhan'},{title:'מבחן בתקשורת', cat:'mivhan'},{title:'מתכונת במוט"ל', cat:'metakonet'}]},
+  { start:'20260608', events:[{title:'בגרות פנימית בספרות', cat:'bagrut'}]},
+  { start:'20260610', events:[{title:'מתכונת בפיזיקה', cat:'metakonet'}]},
+  { start:'20260611', events:[{title:'בגרות פנימית בספרות מועד ב\'', cat:'bagrut'}]},
+  { start:'20260615', events:[{title:'בגרות במוט"ל', cat:'bagrut'},{title:'בגרות בפיזיקה', cat:'bagrut'},{title:'מתכונת בפסיכולוגיה', cat:'metakonet'}]},
+  { start:'20260622', events:[{title:'בגרות בפסיכולוגיה', cat:'bagrut'}]},
+  { start:'20260625', events:[{title:'בגרות במידע ונתונים', cat:'bagrut'},{title:'בגרות במדעי המחשב', cat:'bagrut'}]},
+  { start:'20260629', events:[{title:'בגרות מדעי המחשב (תלמידי מידע ונתונים)', cat:'bagrut'}]},
+  { start:'20260630', events:[{title:'בגרות באנגלית (מועד ב\')', cat:'bagrut'}]},
+  { start:'20260706', events:[{title:'בגרות במתמטיקה (מועד ב\')', cat:'bagrut'}]},
+  { start:'20260709', events:[{title:'בגרות בלשון (מועד ב\')', cat:'bagrut'}]},
+];
+
+function buildExamMap(items) {
+  examDates = {};
+  items.forEach(item => {
+    const key = item.start;
+    (item.events || []).forEach(ev => {
+      if (!examDates[key]) examDates[key] = [];
+      examDates[key].push({ title: ev.title, cat: ev.cat });
     });
+  });
+}
+
+async function loadExams() {
+  try {
+    const res = await fetch(EXAM11_URL);
+    const data = await res.json();
+    buildExamMap(data.flatMap(mg => mg.items || []));
+  } catch (e) {
+    buildExamMap(FALLBACK_EVENTS);
+  }
 }
 
 function loadMarathon() {
